@@ -1,25 +1,26 @@
-const {Sequelize} = require('sequelize');
-require('dotenv').config();
-
+require("dotenv").config();
+const { Sequelize } = require("sequelize");
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
+  process.env.DATABASE_URL || `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
   {
-    host:process.env.DB_HOST,
-    port:process.env.DB_PORT,
-    dialect:"postgres",
-    logging:false,
+    dialect: "postgres",
+    logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
   }
 );
 
-(async()=>{
+(async () => {
   try {
     await sequelize.authenticate();
-    console.log('connected to database successfully!')
+    console.log("Connected to database successfully!");
   } catch (error) {
-    console.error("Unable to connect to database")
+    console.error("Unable to connect to database", error);
   }
 })();
 
